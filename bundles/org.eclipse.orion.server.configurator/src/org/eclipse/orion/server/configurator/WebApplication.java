@@ -17,6 +17,8 @@ import static org.eclipse.orion.server.configurator.configuration.ConfigurationF
 import static org.eclipse.orion.server.configurator.configuration.ConfigurationFormat.SSL_PASSWORD;
 import static org.eclipse.orion.server.configurator.configuration.ConfigurationFormat.SSL_PROTOCOL;
 
+import org.eclipse.orion.server.core.PreferenceHelper;
+
 import java.util.Dictionary;
 import java.util.Hashtable;
 import org.eclipse.core.runtime.IStatus;
@@ -28,7 +30,6 @@ import org.eclipse.equinox.http.jetty.JettyConstants;
 import org.eclipse.orion.server.configurator.configuration.ConfigurationFormat;
 import org.eclipse.orion.server.core.LogHelper;
 import org.eclipse.orion.server.core.ServerConstants;
-
 import java.io.File;
 import java.io.IOException;
 import org.eclipse.equinox.app.IApplication;
@@ -65,7 +66,12 @@ public class WebApplication implements IApplication {
 
 		Dictionary<String, Object> properties = new Hashtable<String, Object>();
 		properties.put(JettyConstants.CONTEXT_SESSIONINACTIVEINTERVAL, new Integer(4 * 60 * 60)); // 4 hours
-		//properties.put(JettyConstants.CONTEXT_PATH, "/cc");
+
+		String contextPath = PreferenceHelper.getString(ServerConstants.CONFIG_CONTEXT_PATH, null);
+		if (contextPath != null) {
+			properties.put(JettyConstants.CONTEXT_PATH, contextPath);
+		}
+
 		if (httpsEnabled) {
 			LogHelper.log(new Status(IStatus.INFO, ConfiguratorActivator.PI_CONFIGURATOR, "Https is enabled", null)); //$NON-NLS-1$
 
